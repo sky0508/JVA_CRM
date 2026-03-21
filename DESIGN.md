@@ -2,6 +2,7 @@
 
 **作成日：** 2026-03-21
 **ステータス：** 設計確定・実装待ち
+**GitHubリポジトリ：** https://github.com/sky0508/JVA_CRM
 
 ---
 
@@ -208,9 +209,10 @@ pm2 start ~/jva-crm/daemon/index.js --name jva-crm-daemon
 DESIGN.md に設計書があります。Phase 1（基盤）から始めてください。
 
 手順：
-1. git init & npm create next-app@latest でプロジェクト初期化
-2. Supabase プロジェクト作成（手動） → keys を .env.local に設定
-3. Supabase スキーマ適用（companies / outreach_history / templates）
+1. git clone https://github.com/sky0508/JVA_CRM ~/jva-crm && cd ~/jva-crm
+2. npm create next-app@latest . でNext.jsを初期化
+3. Supabase プロジェクト作成（手動） → keys を .env.local に設定
+4. Supabase スキーマ適用（companies / outreach_history / templates）
 4. 企業テーブルUI（CompanyTable + CompanyDrawer）を実装
 5. CRUD API ルート実装（/api/companies）
 6. outreach-tracker.md からの初回データインポートスクリプト作成
