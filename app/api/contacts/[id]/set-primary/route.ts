@@ -15,7 +15,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   await supabase
     .from('contacts')
-    .delete()
+    .update({ is_primary: false })
     .eq('company_id', contact.company_id)
     .neq('id', id)
 
