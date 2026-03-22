@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
-import { createServiceClient, getServiceClient } from '@/lib/supabase'
+import { getServiceClient } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
   const authResult = await requireAdmin()
   if (authResult instanceof NextResponse) return authResult
 
-  const supabase = createServiceClient()
+  const supabase = getServiceClient()
   const { data, error } = await supabase
     .from('profiles')
     .select('id, email, role, created_at')
@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: '自分自身のロールを降格できません' }, { status: 400 })
   }
 
-  const supabase = createServiceClient()
+  const supabase = getServiceClient()
   const { error } = await supabase
     .from('profiles')
     .update({ role })
