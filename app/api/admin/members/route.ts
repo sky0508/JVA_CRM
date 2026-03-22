@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
-import { createServiceClient } from '@/lib/supabase'
-import { createClient } from '@supabase/supabase-js'
+import { createServiceClient, getServiceClient } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
   const authResult = await requireAdmin()
@@ -24,6 +23,9 @@ export async function PATCH(req: NextRequest) {
   const { id, role } = await req.json()
   if (!id || !role) return NextResponse.json({ error: 'id and role required' }, { status: 400 })
   if (!['admin', 'member'].includes(role)) return NextResponse.json({ error: 'invalid role' }, { status: 400 })
+  if (id === authResult.user.id && role === 'member') {
+    return NextResponse.json({ error: '自分自身のロールを降格できません' }, { status: 400 })
+  }
 
   const supabase = createServiceClient()
   const { error } = await supabase
@@ -40,13 +42,12 @@ export async function DELETE(req: NextRequest) {
   if (authResult instanceof NextResponse) return authResult
 
   const { id } = await req.json()
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+  if (id === authResult.user.id) {
+    return NextResponse.json({ error: '自分自身を削除できません' }, { status: 400 })
+  }
 
-  const adminClient = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  )
-  const { error } = await adminClient.auth.admin.deleteUser(id)
+  const { error } = await getServiceClient().auth.admin.deleteUser(id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   return new NextResponse(null, { status: 204 })

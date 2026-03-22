@@ -40,22 +40,30 @@ export default function MembersPage() {
   }
 
   async function handleRoleChange(id: string, role: string) {
-    await fetch('/api/admin/members', {
+    const res = await fetch('/api/admin/members', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, role }),
     })
-    fetchMembers()
+    if (!res.ok) {
+      const { error } = await res.json()
+      setMessage(`エラー: ${error}`)
+    }
+    await fetchMembers()
   }
 
   async function handleDelete(id: string, email: string) {
     if (!confirm(`${email} を削除しますか？`)) return
-    await fetch('/api/admin/members', {
+    const res = await fetch('/api/admin/members', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    fetchMembers()
+    if (!res.ok) {
+      const { error } = await res.json()
+      setMessage(`エラー: ${error}`)
+    }
+    await fetchMembers()
   }
 
   return (
