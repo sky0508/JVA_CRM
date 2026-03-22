@@ -6,17 +6,14 @@ export async function GET(req: NextRequest) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
+  const company_id = new URL(req.url).searchParams.get('company_id')
+  if (!company_id) return NextResponse.json([], { status: 400 })
   const supabase = createServiceClient()
-  const { searchParams } = new URL(req.url)
-  const status = searchParams.get('status')
-  const search = searchParams.get('search')
-
-  let query = supabase.from('companies').select('*')
-  if (status) query = query.eq('contact_status', status)
-  if (search) query = query.ilike('name', `%${search}%`)
-  query = query.order('created_at', { ascending: false })
-
-  const { data, error } = await query
+  const { data, error } = await supabase
+    .from('contacts')
+    .select('*')
+    .eq('company_id', company_id)
+    .order('is_primary', { ascending: false })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
@@ -25,9 +22,13 @@ export async function POST(req: NextRequest) {
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
-  const supabase = createServiceClient()
   const body = await req.json()
-  const { data, error } = await supabase.from('companies').insert(body).select().single()
+  const supabase = createServiceClient()
+  const { data, error } = await supabase
+    .from('contacts')
+    .insert(body)
+    .select()
+    .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json(data, { status: 201 })
 }

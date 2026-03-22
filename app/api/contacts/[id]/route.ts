@@ -6,10 +6,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
-  const supabase = createServiceClient()
   const { id } = await params
   const body = await req.json()
-  const { data, error } = await supabase.from('templates').update(body).eq('id', id).select().single()
+  const supabase = createServiceClient()
+  const { data, error } = await supabase
+    .from('contacts').update(body).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json(data)
 }
@@ -18,9 +19,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const authResult = await requireAuth()
   if (authResult instanceof NextResponse) return authResult
 
-  const supabase = createServiceClient()
   const { id } = await params
-  const { error } = await supabase.from('templates').delete().eq('id', id)
+  const supabase = createServiceClient()
+  const { error } = await supabase.from('contacts').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return new NextResponse(null, { status: 204 })
 }
