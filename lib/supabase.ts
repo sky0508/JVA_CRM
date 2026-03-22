@@ -1,8 +1,73 @@
 import { createClient } from '@supabase/supabase-js'
+import { createBrowserClient, createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 
+// ---- Browser client (Client Components) ----
+export function getSupabaseBrowserClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
+// ---- Server client (Server Components, Server Actions, API Routes) ----
+export async function getSupabaseServerClient() {
+  const cookieStore = await cookies()
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: (cookiesToSet) => {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          } catch {
+            // Server Component rendering — cookie writes are ignored
+          }
+        },
+      },
+    }
+  )
+}
+
+// ---- Service role client (bypasses RLS — server-side only) ----
+export function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
+
+// Keep existing getSupabaseClient and createServiceClient for backward compat
+export function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+export function createServiceClient() {
+  return getServiceClient()
+}
+
+// ---- Types and constants ----
 export type ContactStatus =
   | 'untouched' | 'step1' | 'approved' | 'step2'
   | 'followup' | 'negotiating' | 'listed' | 'closed'
+
+export interface Contact {
+  id: string
+  company_id: string
+  name: string
+  email: string | null
+  linkedin_url: string | null
+  linkedin_url_type: 'personal' | 'company' | null
+  lang: 'JA' | 'EN'
+  is_primary: boolean
+  created_at: string
+}
 
 export interface Company {
   id: string
@@ -15,6 +80,7 @@ export interface Company {
   notes: string | null
   created_at: string
   updated_at: string
+  contacts?: Contact[]
 }
 
 export interface OutreachHistory {
@@ -25,20 +91,6 @@ export interface OutreachHistory {
   status: 'queued' | 'sent' | 'failed' | 'replied'
   sent_at: string | null
   created_at: string
-}
-
-export function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
-
-export function createServiceClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
 }
 
 export const STATUS_LABELS: Record<ContactStatus, string> = {
