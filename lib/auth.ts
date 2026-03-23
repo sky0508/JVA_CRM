@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getSupabaseServerClient } from './supabase'
+import { getSupabaseServerClient } from './supabase.server'
 
 // Returns the authenticated user, or a 401 NextResponse.
 // Usage in API routes:
