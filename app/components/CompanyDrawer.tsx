@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import type { Company, ContactStatus, OutreachHistory } from '@/lib/supabase'
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/supabase'
 import OutreachComposer from './OutreachComposer'
+import ContactsSection from './ContactsSection'
 
 interface Props {
   company: Company
@@ -34,9 +35,6 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         name: form.name,
-        contact_name: form.contact_name,
-        email: form.email,
-        linkedin_url: form.linkedin_url,
         contact_status: form.contact_status,
         notes: form.notes,
       }),
@@ -70,22 +68,9 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
           </div>
 
+          <ContactsSection companyId={company.id} companyName={company.name} />
+
           <div className="space-y-4 mb-6">
-            <Field label="担当者" editing={editing}
-              value={form.contact_name ?? ''} editValue={
-                <input value={form.contact_name ?? ''} onChange={e => setForm({...form, contact_name: e.target.value})}
-                  className="w-full border rounded px-2 py-1 text-sm" />
-              } />
-            <Field label="メール" editing={editing}
-              value={form.email ?? ''} editValue={
-                <input value={form.email ?? ''} onChange={e => setForm({...form, email: e.target.value})}
-                  className="w-full border rounded px-2 py-1 text-sm" />
-              } />
-            <Field label="LinkedIn" editing={editing}
-              value={form.linkedin_url ?? ''} editValue={
-                <input value={form.linkedin_url ?? ''} onChange={e => setForm({...form, linkedin_url: e.target.value})}
-                  className="w-full border rounded px-2 py-1 text-sm" />
-              } />
             <div>
               <label className="text-xs text-gray-500 uppercase tracking-wide">ステータス</label>
               {editing ? (
@@ -157,17 +142,6 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function Field({ label, value, editing, editValue }: {
-  label: string; value: string; editing: boolean; editValue: React.ReactNode
-}) {
-  return (
-    <div>
-      <label className="text-xs text-gray-500 uppercase tracking-wide">{label}</label>
-      {editing ? <div className="mt-1">{editValue}</div> : <p className="mt-1 text-sm text-gray-900">{value || '—'}</p>}
     </div>
   )
 }

@@ -76,15 +76,13 @@ export default function CompanyTable() {
           <thead className="bg-gray-50">
             <tr>
               <Th field="name" label="会社名" />
-              <Th field="contact_name" label="担当者" />
               <Th field="contact_status" label="ステータス" />
-              <Th field="email" label="メール" />
               <Th field="updated_at" label="更新日" />
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {loading ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">読み込み中...</td></tr>
+              <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-400">読み込み中...</td></tr>
             ) : sorted.map(company => (
               <tr
                 key={company.id}
@@ -92,13 +90,11 @@ export default function CompanyTable() {
                 onClick={() => setSelected(company)}
               >
                 <td className="px-4 py-3 text-sm font-medium text-gray-900">{company.name}</td>
-                <td className="px-4 py-3 text-sm text-gray-600">{company.contact_name ?? '—'}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${STATUS_COLORS[company.contact_status]}`}>
                     {STATUS_LABELS[company.contact_status]}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-600">{company.email ?? '—'}</td>
                 <td className="px-4 py-3 text-sm text-gray-400">
                   {new Date(company.updated_at).toLocaleDateString('ja-JP')}
                 </td>
