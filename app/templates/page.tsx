@@ -23,7 +23,7 @@ export default function TemplatesPage() {
   }
 
   const del = async (id: string) => {
-    if (!confirm('削除しますか？')) return
+    if (!confirm('Delete this template?')) return
     await fetch(`/api/templates/${id}`, { method: 'DELETE' })
     load()
   }
@@ -33,28 +33,28 @@ export default function TemplatesPage() {
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <a href="/" className="text-sm text-gray-500 hover:text-gray-700">← CRM</a>
-          <h1 className="text-xl font-semibold text-gray-900">テンプレート管理</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Template Management</h1>
         </div>
       </header>
       <div className="max-w-4xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow p-4 mb-6 space-y-3">
-          <h2 className="font-medium">{editing ? 'テンプレートを編集' : '新規テンプレート'}</h2>
+          <h2 className="font-medium">{editing ? 'Edit Template' : 'New Template'}</h2>
           <select value={form.type} onChange={e => setForm({...form, type: e.target.value})}
             className="border rounded px-2 py-1 text-sm">
             <option value="linkedin_dm">LinkedIn DM</option>
-            <option value="email">メール</option>
-            <option value="form">フォーム</option>
+            <option value="email">Email</option>
+            <option value="form">Form</option>
           </select>
           <input value={form.name} onChange={e => setForm({...form, name: e.target.value})}
-            placeholder="テンプレート名（例: Step1 JA）"
+            placeholder="Template name (e.g. Step1 EN)"
             className="w-full border rounded px-2 py-1 text-sm" />
           <textarea value={form.content} onChange={e => setForm({...form, content: e.target.value})}
-            placeholder="内容（{{company_name}} 等の変数使用可）"
+            placeholder="Content (variables like {{company_name}} supported)"
             rows={6} className="w-full border rounded px-2 py-1 text-sm font-mono" />
           <div className="flex gap-2">
-            <button onClick={save} className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">保存</button>
+            <button onClick={save} className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">Save</button>
             {editing && <button onClick={() => { setEditing(null); setForm({ type: 'linkedin_dm', name: '', content: '' }) }}
-              className="px-4 py-2 border text-sm rounded">キャンセル</button>}
+              className="px-4 py-2 border text-sm rounded">Cancel</button>}
           </div>
         </div>
         <div className="space-y-2">
@@ -67,8 +67,8 @@ export default function TemplatesPage() {
               </div>
               <div className="flex gap-2 flex-shrink-0">
                 <button onClick={() => { setEditing(t); setForm({ type: t.type, name: t.name, content: t.content }) }}
-                  className="text-xs text-blue-600 hover:underline">編集</button>
-                <button onClick={() => del(t.id)} className="text-xs text-red-500 hover:underline">削除</button>
+                  className="text-xs text-blue-600 hover:underline">Edit</button>
+                <button onClick={() => del(t.id)} className="text-xs text-red-500 hover:underline">Delete</button>
               </div>
             </div>
           ))}

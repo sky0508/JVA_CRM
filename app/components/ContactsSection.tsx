@@ -41,20 +41,20 @@ export default function ContactsSection({ companyId, companyName }: Props) {
     if (tmpl) {
       const msg = applyTemplate(tmpl.content, contact, companyName)
       await navigator.clipboard.writeText(msg)
-      showToast('メッセージをコピーしました。LinkedInでペーストしてください')
+      showToast('Message copied. Paste it on LinkedIn.')
     }
     if (contact.linkedin_url) window.open(contact.linkedin_url, '_blank')
   }
 
   const setPrimary = async (contact: Contact) => {
-    if (!confirm(`${contact.name}をメインに設定し、他の担当者を削除しますか？`)) return
+    if (!confirm(`Set ${contact.name} as primary and remove other contacts?`)) return
     await fetch(`/api/contacts/${contact.id}/set-primary`, { method: 'POST' })
     const res = await fetch(`/api/contacts?company_id=${companyId}`)
     setContacts(await res.json())
   }
 
   const deleteContact = async (id: string) => {
-    if (!confirm('削除しますか？')) return
+    if (!confirm('Delete this contact?')) return
     await fetch(`/api/contacts/${id}`, { method: 'DELETE' })
     setContacts(prev => prev.filter(c => c.id !== id))
   }
@@ -74,8 +74,8 @@ export default function ContactsSection({ companyId, companyName }: Props) {
   return (
     <div className="mb-6">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-sm font-semibold text-gray-700">担当者</h3>
-        <button onClick={() => setAdding(true)} className="text-xs text-blue-600 hover:underline">+ 追加</button>
+        <h3 className="text-sm font-semibold text-gray-700">Contacts</h3>
+        <button onClick={() => setAdding(true)} className="text-xs text-blue-600 hover:underline">+ Add</button>
       </div>
 
       {toast && (
@@ -90,7 +90,7 @@ export default function ContactsSection({ companyId, companyName }: Props) {
                 <span className="font-medium">{c.is_primary ? '★ ' : ''}{c.name}</span>
                 <span className="ml-2 text-xs text-gray-400">{c.lang}</span>
               </div>
-              <button onClick={() => deleteContact(c.id)} className="text-gray-300 hover:text-red-400 text-xs">削除</button>
+              <button onClick={() => deleteContact(c.id)} className="text-gray-300 hover:text-red-400 text-xs">Remove</button>
             </div>
             {c.email && <p className="text-gray-500 mt-1">📧 {c.email}</p>}
             {c.linkedin_url && (
@@ -101,35 +101,35 @@ export default function ContactsSection({ companyId, companyName }: Props) {
                   onChange={e => setSelectedTemplate(prev => ({ ...prev, [c.id]: e.target.value }))}
                   className="text-xs border rounded px-1.5 py-1"
                 >
-                  <option value="">テンプレートを選択</option>
+                  <option value="">Select template</option>
                   {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
                 <button
                   onClick={() => openLinkedIn(c)}
                   className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
                 >
-                  LinkedIn を開く
+                  Open LinkedIn
                 </button>
               </div>
             )}
             {!c.is_primary && contacts.length > 1 && (
               <button onClick={() => setPrimary(c)} className="mt-2 text-xs text-gray-400 hover:text-blue-600">
-                メインに設定
+                Set as Primary
               </button>
             )}
           </div>
         ))}
         {contacts.length === 0 && !adding && (
-          <p className="text-sm text-gray-400">担当者なし</p>
+          <p className="text-sm text-gray-400">No contacts</p>
         )}
       </div>
 
       {adding && (
         <div className="mt-3 border rounded-lg p-3 space-y-2 text-sm">
-          <input placeholder="担当者名 *" value={newContact.name}
+          <input placeholder="Contact name *" value={newContact.name}
             onChange={e => setNewContact(p => ({ ...p, name: e.target.value }))}
             className="w-full border rounded px-2 py-1 text-sm" />
-          <input placeholder="メール" value={newContact.email}
+          <input placeholder="Email" value={newContact.email}
             onChange={e => setNewContact(p => ({ ...p, email: e.target.value }))}
             className="w-full border rounded px-2 py-1 text-sm" />
           <input placeholder="LinkedIn URL" value={newContact.linkedin_url}
@@ -151,8 +151,8 @@ export default function ContactsSection({ companyId, companyName }: Props) {
           </div>
           <div className="flex gap-2">
             <button onClick={addContact} disabled={!newContact.name}
-              className="text-xs bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50">追加</button>
-            <button onClick={() => setAdding(false)} className="text-xs border px-3 py-1 rounded">キャンセル</button>
+              className="text-xs bg-blue-600 text-white px-3 py-1 rounded disabled:opacity-50">Add</button>
+            <button onClick={() => setAdding(false)} className="text-xs border px-3 py-1 rounded">Cancel</button>
           </div>
         </div>
       )}

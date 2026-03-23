@@ -35,7 +35,7 @@ export default function KpiSummary() {
       ))}
       <div className="bg-white rounded-lg p-3 shadow-sm">
         <p className="text-2xl font-bold text-blue-600">{weekSent}</p>
-        <p className="text-xs text-gray-500 mt-1">今週送信</p>
+        <p className="text-xs text-gray-500 mt-1">Sent This Week</p>
       </div>
     </div>
   )

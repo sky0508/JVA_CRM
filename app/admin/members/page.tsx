@@ -31,11 +31,11 @@ export default function MembersPage() {
       body: JSON.stringify({ email: inviteEmail }),
     })
     if (res.ok) {
-      setMessage(`招待メールを送信しました: ${inviteEmail}`)
+      setMessage(`Invitation sent: ${inviteEmail}`)
       setInviteEmail('')
     } else {
       const { error } = await res.json()
-      setMessage(`エラー: ${error}`)
+      setMessage(`Error: ${error}`)
     }
   }
 
@@ -47,13 +47,13 @@ export default function MembersPage() {
     })
     if (!res.ok) {
       const { error } = await res.json()
-      setMessage(`エラー: ${error}`)
+      setMessage(`Error: ${error}`)
     }
     await fetchMembers()
   }
 
   async function handleDelete(id: string, email: string) {
-    if (!confirm(`${email} を削除しますか？`)) return
+    if (!confirm(`Delete this member: ${email}?`)) return
     const res = await fetch('/api/admin/members', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
@@ -61,7 +61,7 @@ export default function MembersPage() {
     })
     if (!res.ok) {
       const { error } = await res.json()
-      setMessage(`エラー: ${error}`)
+      setMessage(`Error: ${error}`)
     }
     await fetchMembers()
   }
@@ -71,13 +71,13 @@ export default function MembersPage() {
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <a href="/" className="text-sm text-gray-500 hover:text-gray-700">← CRM</a>
-          <h1 className="text-xl font-semibold text-gray-900">メンバー管理</h1>
+          <h1 className="text-xl font-semibold text-gray-900">Member Management</h1>
         </div>
       </header>
 
       <main className="p-6 max-w-2xl">
         <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-sm font-medium text-gray-700 mb-3">メンバーを招待</h2>
+          <h2 className="text-sm font-medium text-gray-700 mb-3">Invite Member</h2>
           <form onSubmit={handleInvite} className="flex gap-2">
             <input
               type="email"
@@ -91,7 +91,7 @@ export default function MembersPage() {
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
             >
-              招待
+              Invite
             </button>
           </form>
           {message && <p className="text-sm text-gray-600 mt-2">{message}</p>}
@@ -101,14 +101,14 @@ export default function MembersPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">メール</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ロール</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">操作</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {loading ? (
-                <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-400">読み込み中...</td></tr>
+                <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-400">Loading...</td></tr>
               ) : members.map(m => (
                 <tr key={m.id}>
                   <td className="px-4 py-3 text-sm text-gray-900">{m.email}</td>
@@ -127,7 +127,7 @@ export default function MembersPage() {
                       onClick={() => handleDelete(m.id, m.email)}
                       className="text-sm text-red-600 hover:text-red-800"
                     >
-                      削除
+                      Remove
                     </button>
                   </td>
                 </tr>

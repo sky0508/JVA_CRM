@@ -4,6 +4,7 @@ import type { Company, Contact, ContactStatus } from '@/lib/supabase'
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/supabase'
 import CompanyDrawer from './CompanyDrawer'
 import OutreachModal from './OutreachModal'
+import CsvImportModal from './CsvImportModal'
 
 const STATUSES: ContactStatus[] = ['untouched','step1','approved','step2','followup','negotiating','listed','closed']
 
@@ -16,6 +17,7 @@ export default function CompanyTable() {
   const [selected, setSelected] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState<{ type: 'linkedin' | 'email'; contact: Contact; company: Company } | null>(null)
+  const [showImport, setShowImport] = useState(false)
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true)
@@ -55,7 +57,7 @@ export default function CompanyTable() {
       <div className="flex gap-3 mb-4 items-center">
         <input
           type="text"
-          placeholder="会社名で検索..."
+          placeholder="Search companies..."
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="border border-gray-300 rounded-md px-3 py-2 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -65,28 +67,34 @@ export default function CompanyTable() {
           onChange={e => setFilterStatus(e.target.value)}
           className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">全ステータス</option>
+          <option value="">All statuses</option>
           {STATUSES.map(s => (
             <option key={s} value={s}>{STATUS_LABELS[s]}</option>
           ))}
         </select>
-        <span className="text-sm text-gray-500">{companies.length}件</span>
+        <span className="text-sm text-gray-500">{companies.length} companies</span>
+        <button
+          onClick={() => setShowImport(true)}
+          className="ml-auto px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+        >
+          Import CSV
+        </button>
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <Th field="name" label="会社名" />
+              <Th field="name" label="Company" />
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-              <Th field="contact_status" label="ステータス" />
-              <Th field="updated_at" label="更新日" />
+              <Th field="contact_status" label="Status" />
+              <Th field="updated_at" label="Updated" />
               <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {loading ? (
-              <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">読み込み中...</td></tr>
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">Loading...</td></tr>
             ) : sorted.map(company => {
               const pc = company.primary_contact ?? null
               return (
@@ -160,6 +168,13 @@ export default function CompanyTable() {
           contact={modal.contact}
           company={modal.company}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {showImport && (
+        <CsvImportModal
+          onClose={() => setShowImport(false)}
+          onSuccess={() => { setShowImport(false); fetchCompanies() }}
         />
       )}
     </div>

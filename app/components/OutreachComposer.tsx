@@ -36,14 +36,14 @@ export default function OutreachComposer({ companyId, onSent }: Props) {
             onClick={() => setType(t)}
             className={`px-3 py-1 text-xs rounded border ${type === t ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 hover:bg-gray-50'}`}
           >
-            {t === 'linkedin_dm' ? 'LinkedIn DM' : t === 'email' ? 'メール' : 'フォーム'}
+            {t === 'linkedin_dm' ? 'LinkedIn DM' : t === 'email' ? 'Email' : 'Form'}
           </button>
         ))}
       </div>
       <textarea
         value={message}
         onChange={e => setMessage(e.target.value)}
-        placeholder="メッセージを入力..."
+        placeholder="Enter message..."
         rows={4}
         className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
@@ -52,7 +52,7 @@ export default function OutreachComposer({ companyId, onSent }: Props) {
         disabled={sending || !message.trim()}
         className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50"
       >
-        {sending ? '送信中...' : sent ? '✓ キューに追加' : 'キューに送信'}
+        {sending ? 'Sending...' : sent ? '✓ Queued' : 'Add to Queue'}
       </button>
     </div>
   )

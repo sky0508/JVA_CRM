@@ -72,7 +72,7 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
 
           <div className="space-y-4 mb-6">
             <div>
-              <label className="text-xs text-gray-500 uppercase tracking-wide">ステータス</label>
+              <label className="text-xs text-gray-500 uppercase tracking-wide">Status</label>
               {editing ? (
                 <select value={form.contact_status}
                   onChange={e => setForm({...form, contact_status: e.target.value as ContactStatus})}
@@ -84,7 +84,7 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
               )}
             </div>
             <div>
-              <label className="text-xs text-gray-500 uppercase tracking-wide">メモ</label>
+              <label className="text-xs text-gray-500 uppercase tracking-wide">Notes</label>
               {editing ? (
                 <textarea value={form.notes ?? ''} onChange={e => setForm({...form, notes: e.target.value})}
                   rows={3} className="mt-1 w-full border rounded px-2 py-1 text-sm" />
@@ -99,19 +99,19 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
               <>
                 <button onClick={save} disabled={saving}
                   className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 disabled:opacity-50">
-                  {saving ? '保存中...' : '保存'}
+                  {saving ? 'Saving...' : 'Save'}
                 </button>
                 <button onClick={() => { setForm({...company}); setEditing(false) }}
-                  className="px-4 py-2 border text-sm rounded hover:bg-gray-50">キャンセル</button>
+                  className="px-4 py-2 border text-sm rounded hover:bg-gray-50">Cancel</button>
               </>
             ) : (
               <button onClick={() => setEditing(true)}
-                className="px-4 py-2 border text-sm rounded hover:bg-gray-50">編集</button>
+                className="px-4 py-2 border text-sm rounded hover:bg-gray-50">Edit</button>
             )}
           </div>
 
           <div className="border-t pt-6 mb-8">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">アウトリーチ送信</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Send Outreach</h3>
             <OutreachComposer companyId={company.id} onSent={() => {
               fetch(`/api/companies/${company.id}`)
                 .then(r => r.json())
@@ -120,9 +120,9 @@ export default function CompanyDrawer({ company, onClose, onUpdate }: Props) {
           </div>
 
           <div className="border-t pt-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">アウトリーチ履歴</h3>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">Outreach History</h3>
             {history.length === 0 ? (
-              <p className="text-sm text-gray-400">履歴なし</p>
+              <p className="text-sm text-gray-400">No history</p>
             ) : (
               <ul className="space-y-3">
                 {history.map(h => (
