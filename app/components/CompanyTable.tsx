@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import type { Company, ContactStatus } from '@/lib/supabase'
+import type { Company, Contact, ContactStatus } from '@/lib/supabase'
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/supabase'
 import CompanyDrawer from './CompanyDrawer'
+import OutreachModal from './OutreachModal'
 
 const STATUSES: ContactStatus[] = ['untouched','step1','approved','step2','followup','negotiating','listed','closed']
 
@@ -14,6 +15,7 @@ export default function CompanyTable() {
   const [sortAsc, setSortAsc] = useState(false)
   const [selected, setSelected] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
+  const [modal, setModal] = useState<{ type: 'linkedin' | 'email'; contact: Contact; company: Company } | null>(null)
 
   const fetchCompanies = useCallback(async () => {
     setLoading(true)
@@ -76,30 +78,67 @@ export default function CompanyTable() {
           <thead className="bg-gray-50">
             <tr>
               <Th field="name" label="会社名" />
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
               <Th field="contact_status" label="ステータス" />
               <Th field="updated_at" label="更新日" />
+              <th className="px-4 py-3" />
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {loading ? (
-              <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-400">読み込み中...</td></tr>
-            ) : sorted.map(company => (
-              <tr
-                key={company.id}
-                className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => setSelected(company)}
-              >
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">{company.name}</td>
-                <td className="px-4 py-3">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${STATUS_COLORS[company.contact_status]}`}>
-                    {STATUS_LABELS[company.contact_status]}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-400">
-                  {new Date(company.updated_at).toLocaleDateString('ja-JP')}
-                </td>
-              </tr>
-            ))}
+              <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">読み込み中...</td></tr>
+            ) : sorted.map(company => {
+              const pc = company.primary_contact ?? null
+              return (
+                <tr
+                  key={company.id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => setSelected(company)}
+                >
+                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{company.name}</td>
+                  <td className="px-4 py-3">
+                    {pc ? (
+                      <div>
+                        <div className="text-sm text-gray-900">{pc.name}</div>
+                        {pc.email && <div className="text-xs text-gray-400">{pc.email}</div>}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-300">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${STATUS_COLORS[company.contact_status]}`}>
+                      {STATUS_LABELS[company.contact_status]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-400">
+                    {new Date(company.updated_at).toLocaleDateString('ja-JP')}
+                  </td>
+                  <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                    <div className="flex gap-1 justify-end">
+                      {pc?.linkedin_url && (
+                        <button
+                          onClick={() => setModal({ type: 'linkedin', contact: pc, company })}
+                          className="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 rounded hover:bg-blue-100"
+                          title="LinkedIn DM"
+                        >
+                          LinkedIn
+                        </button>
+                      )}
+                      {pc?.email && (
+                        <button
+                          onClick={() => setModal({ type: 'email', contact: pc, company })}
+                          className="px-2 py-1 text-xs font-medium text-green-700 bg-green-50 rounded hover:bg-green-100"
+                          title="Send Email"
+                        >
+                          Email
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -112,6 +151,15 @@ export default function CompanyTable() {
             setCompanies(prev => prev.map(c => c.id === updated.id ? updated : c))
             setSelected(updated)
           }}
+        />
+      )}
+
+      {modal && (
+        <OutreachModal
+          type={modal.type}
+          contact={modal.contact}
+          company={modal.company}
+          onClose={() => setModal(null)}
         />
       )}
     </div>

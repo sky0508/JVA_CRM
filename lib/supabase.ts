@@ -58,6 +58,7 @@ export interface Company {
   created_at: string
   updated_at: string
   contacts?: Contact[]
+  primary_contact?: Contact | null
 }
 
 export interface OutreachHistory {
