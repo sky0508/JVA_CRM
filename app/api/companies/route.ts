@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
   const companies = (data ?? []).map((c: { contacts?: Contact[]; [key: string]: unknown }) => ({
     ...c,
-    primary_contact: (c.contacts ?? []).find((ct: Contact) => ct.is_primary) ?? null,
+    primary_contact: (c.contacts ?? []).find((ct: Contact) => ct.is_primary) ?? (c.contacts?.[0] ?? null),
     contacts: undefined,
   }))
 

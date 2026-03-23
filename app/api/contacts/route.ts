@@ -24,9 +24,17 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const supabase = createServiceClient()
+
+  // Auto-set is_primary if this is the first contact for the company
+  const { count } = await supabase
+    .from('contacts')
+    .select('*', { count: 'exact', head: true })
+    .eq('company_id', body.company_id)
+  const isFirst = (count ?? 0) === 0
+
   const { data, error } = await supabase
     .from('contacts')
-    .insert(body)
+    .insert({ ...body, is_primary: isFirst || !!body.is_primary })
     .select()
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
